@@ -1,26 +1,37 @@
-Insplico Simulation
-================
-Luis P Iniguez
+---
+title: "Insplico Simulation"
+author: "Luis P Iniguez"
+format: gfm
+editor: visual
+---
 
 ### **Generating GTF (bash):**
 
-``` bash
+```{bash}
+#| output: false
+#| eval: false
+
 wget https://ftp.ensembl.org/pub/release-85/gtf/homo_sapiens/Homo_sapiens.GRCh38.85.gtf.gz  && gunzip Homo_sapiens.GRCh38.85.gtf.gz
 
 perl -e 'open($fh,"Homo_sapiens.GRCh38.85.gtf");
 while(<$fh>){
-    chomp;
-    if(substr($_,0,1) eq "#"){print $_."\n";next;}
-    @fs=split("\t",$_);
+	chomp;
+	if(substr($_,0,1) eq "#"){print $_."\n";next;}
+	@fs=split("\t",$_);
   if($fs[0] =~ /^\d+/ || $fs[0] eq "X" || $fs[0] eq "Y" || $fs[0] eq "MT"){$fs[0]="chr".$fs[0];}
-    print join("\t",@fs)."\n";
+	print join("\t",@fs)."\n";
 }' > Hsa38.gtf
 rm Homo_sapiens.GRCh38.85.gtf
+
+
 ```
 
 ### **File parsing (bash):**
 
-``` bash
+```{bash }
+#| output: false
+#| eval: false
+
 
 cat Hsa38.gtf |\
 perl -F'\t' -ane 'if(@F<5 || /transcript_support_level \"1\"/){print $_}' >\ Hsa38_only_transcript_support_level_1.gtf
@@ -62,7 +73,7 @@ wget ${FAPATH}chrY.fna.gz && gunzip chrY.fna.gz && mv chrY.fna chroms/chrY.fa
 
 ### **R session setup:**
 
-``` r
+```{r Setup, warning=FALSE,message=FALSE}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 if (!require("pacman", quietly = TRUE))
@@ -80,7 +91,8 @@ p_load(tidyr)
 
 ### **Initial Parameters:**
 
-``` r
+```{r parameters}
+#| eval: false
 readlengths<-c(75,150)
 fragsizes<-c(250,500)
 nsim<-1000
@@ -94,7 +106,8 @@ my_obj <- import(gtf_file)
 
 ### **RNA-seq reads simulation:**
 
-``` r
+```{r simulation}
+#| eval: false
 for (i in 1:nsamples){
   
     ########################################
