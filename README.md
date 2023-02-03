@@ -335,3 +335,42 @@ for (i in 1:nsamples){
       }
 }
 ```
+
+### **Alignment of simulated reads (bash):**
+
+``` bash
+for rlen in 75 150
+do
+for sim in {1..20}
+do
+STAR --readFilesIn fastas/sim${sim}/R_${rlen}_SE/*fasta.gz \
+ --runThreadN 4 --chimSegmentMin 20 \
+ --alignSJoverhangMin 8 --twopassMode Basic \
+ --alignIntronMin 20 --alignIntronMax 200000 \
+ --alignSJDBoverhangMin 5 --outFilterMultimapNmax 100 \
+ --outFileNamePrefix results/sim${sim}/R_${rlen}_SE/ \
+ --quantMode GeneCounts --outSAMattributes All \
+ --runMode alignReads --outFilterMismatchNmax 999 \
+ --outFilterMismatchNoverLmax 0.1 \
+ --seedSearchStartLmax 25 --outSAMtype BAM SortedByCoordinate \
+ --readFilesCommand zcat \
+ --outSAMstrandField intronMotif --genomeDir hg38_reference
+
+for insize in 250 500
+do
+STAR --readFilesIn fastas/sim${sim}/R_${rlen}_Fsize_${insize}_PE/*fasta.gz \
+ --runThreadN 4 --chimSegmentMin 20 \
+ --alignSJoverhangMin 8 --twopassMode Basic \
+ --alignIntronMin 20 --alignIntronMax 200000 \
+ --alignSJDBoverhangMin 5 --outFilterMultimapNmax 100 \
+ --outFileNamePrefix results/sim${sim}/R_${rlen}_Fsize_${insize}_PE/ \
+ --quantMode GeneCounts --outSAMattributes All \
+ --runMode alignReads --outFilterMismatchNmax 999 \
+ --outFilterMismatchNoverLmax 0.1 \
+ --seedSearchStartLmax 25 --outSAMtype BAM SortedByCoordinate \
+ --readFilesCommand zcat \
+ --outSAMstrandField intronMotif --genomeDir hg38_reference
+done
+done
+done
+```
